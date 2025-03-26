@@ -8,7 +8,7 @@ const Navbar = () => {
 
     const [showMenu, setShowMenu] = useState(false);
 
-    const[token, setShowToken] = useState(true);
+    const[token, setToken] = useState(true);
     
   return (
     <div className='flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400'>
@@ -40,7 +40,7 @@ const Navbar = () => {
                         <div className='min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4'>
                             <p onClick={()=>navigate('profile')} className='hover:text-black cursor-pointer'>My Profile</p>
                             <p onClick={()=>navigate('my-appointments')} className='hover:text-black cursor-pointer'>My Appointments</p>
-                            <p className='hover:text-black cursor-pointer'>Logout</p>
+                            <p onClick={()=>setToken(false)} className='hover:text-black cursor-pointer'>Logout</p>
                         </div>
                     </div>
                 </div> : <button onClick={()=>navigate('/login')} className='bg-[#5f6FFF] text-white rounded-full px-8 py-3 font-light hidden cursor-pointer md:block'> Create account</button>
