@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { assets } from '../assets/assets_frontend/assets';
+import RelatedDoctors from '../components/RelatedDoctors';
 
 const Appointments = () => {
     const { docId } = useParams();
@@ -63,7 +64,6 @@ const Appointments = () => {
                     continue;
                 }
 
-                // Format tanggal dan waktu yang mudah dibaca
                 const formattedDate = currentDate.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     day: '2-digit', 
@@ -80,8 +80,8 @@ const Appointments = () => {
                 slots.push({
                     date: formattedDate,
                     time: formattedTime,
-                    dateTime: currentDate.toISOString(), // Format ISO untuk backend
-                    displayDateTime: currentDate.toLocaleString('en-US', { // Format tampilan
+                    dateTime: currentDate.toISOString(),
+                    displayDateTime: currentDate.toLocaleString('en-US', {
                         weekday: 'long',
                         day: '2-digit',
                         month: 'long',
@@ -205,32 +205,37 @@ const Appointments = () => {
                     ))}
                 </div>
 
-                {/* Time Slots */}
-                <div className='mt-4 grid grid-cols-3 sm:grid-cols-4 gap-3'>
-                    {filteredSlots.map((slot, index) => (
-                        <button 
-                            key={index}
-                            className={`px-3 py-2 rounded-lg shadow-sm focus:outline-none transition-all ${
-                                selectedTime?.dateTime === slot.dateTime
-                                    ? 'bg-[#5f6FFF] text-white'
-                                    : 'bg-white border border-gray-300 hover:bg-gray-50'
-                            }`}
-                            onClick={() => setSelectedTime(slot)}
-                        >
-                            {slot.time}
-                        </button>
-                    ))}
-                </div>
+                {/* Time Slots (Diperbarui) */}
+                <div className='mt-4 overflow-x-auto pb-2'>
+  <div className='flex gap-3 min-w-max'>
+    {filteredSlots.map((slot, index) => (
+      <button 
+        key={index}
+        className={`px-3 py-2 rounded-lg shadow-sm 
+                    focus:outline-none transition-all whitespace-nowrap
+                    min-w-[120px] 
+                    ${selectedTime?.dateTime === slot.dateTime
+                      ? 'bg-[#5f6FFF] text-white'
+                      : 'bg-white border border-gray-300 hover:bg-gray-50'
+                    }`}
+        onClick={() => setSelectedTime(slot)}
+      >
+        {slot.time}
+      </button>
+    ))}
+  </div>
+</div>
 
                 {/* Confirmation Section */}
                 {selectedTime && (
                     <div className='mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200'>
                         <p className='font-medium mb-2'>Selected Appointment:</p>
                         <div className='space-y-1'>
-                            {/* Tampilkan format yang mudah dibaca */}
                             <div>
-                                <span className='text-gray-600'>Full Date:</span> 
-                                <span className='ml-1'>{selectedTime.displayDateTime}</span>
+                                <span className='text-gray-600'>Doctor:</span> 
+                                <span className='ml-1 font-semibold'>
+                                    {docInfo.name} - {docInfo.specialist}
+                                </span>
                             </div>
                             <div>
                                 <span className='text-gray-600'>Date:</span> 
@@ -248,24 +253,25 @@ const Appointments = () => {
                         <button 
                             className='mt-4 w-full bg-[#5f6FFF] text-white py-2 rounded-lg hover:bg-blue-700 transition-colors'
                             onClick={() => {
-                                // Kirim data ke backend
                                 console.log('Appointment Data:', {
                                     doctor: docInfo.name,
                                     date: selectedTime.date,
                                     time: selectedTime.time,
-                                    isoDateTime: selectedTime.dateTime, // Format ISO untuk backend
-                                    displayDateTime: selectedTime.displayDateTime
+                                    isoDateTime: selectedTime.dateTime,
                                 });
-                                
                                 alert('Appointment confirmed!');
                                 setSelectedDate(null);
                                 setSelectedTime(null);
                             }}
                         >
-                            Confirm Appointment
+                            Booking Doctor
                         </button>
                     </div>
                 )}
+            </div>
+            {/* Related Doctor */}
+            <div>
+                <RelatedDoctors docId={docId} specialist={docInfo.specialist} />
             </div>
         </div>
     );
