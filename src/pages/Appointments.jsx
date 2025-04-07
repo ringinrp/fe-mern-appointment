@@ -18,11 +18,9 @@ const Appointments = () => {
             setLoading(false);
             return;
         }
-
         const foundDoctor = doctors.find(
             (doc) => String(doc._id) === String(docId)
         );
-        
         setDocInfo(foundDoctor || null);
         setLoading(false);
     }, [docId, doctors]);
@@ -65,6 +63,7 @@ const Appointments = () => {
                     continue;
                 }
 
+                // Format tanggal dan waktu yang mudah dibaca
                 const formattedDate = currentDate.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     day: '2-digit', 
@@ -81,7 +80,16 @@ const Appointments = () => {
                 slots.push({
                     date: formattedDate,
                     time: formattedTime,
-                    dateTime: currentDate.toISOString()
+                    dateTime: currentDate.toISOString(), // Format ISO untuk backend
+                    displayDateTime: currentDate.toLocaleString('en-US', { // Format tampilan
+                        weekday: 'long',
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })
                 });
     
                 currentDate.setMinutes(currentDate.getMinutes() + 30);
@@ -219,6 +227,11 @@ const Appointments = () => {
                     <div className='mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200'>
                         <p className='font-medium mb-2'>Selected Appointment:</p>
                         <div className='space-y-1'>
+                            {/* Tampilkan format yang mudah dibaca */}
+                            <div>
+                                <span className='text-gray-600'>Full Date:</span> 
+                                <span className='ml-1'>{selectedTime.displayDateTime}</span>
+                            </div>
                             <div>
                                 <span className='text-gray-600'>Date:</span> 
                                 <span className='ml-1'>{selectedTime.date}</span>
@@ -235,9 +248,16 @@ const Appointments = () => {
                         <button 
                             className='mt-4 w-full bg-[#5f6FFF] text-white py-2 rounded-lg hover:bg-blue-700 transition-colors'
                             onClick={() => {
-                                // Handle appointment confirmation here
+                                // Kirim data ke backend
+                                console.log('Appointment Data:', {
+                                    doctor: docInfo.name,
+                                    date: selectedTime.date,
+                                    time: selectedTime.time,
+                                    isoDateTime: selectedTime.dateTime, // Format ISO untuk backend
+                                    displayDateTime: selectedTime.displayDateTime
+                                });
+                                
                                 alert('Appointment confirmed!');
-                                // Reset selections
                                 setSelectedDate(null);
                                 setSelectedTime(null);
                             }}
